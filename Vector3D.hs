@@ -1,17 +1,19 @@
 module Vector3D where
 
-data Num a => Vector3D a = Vec a a a deriving (Show, Eq)
+data Vector3D = Vec { x::Float
+                    , y::Float
+                    , z::Float } deriving (Show, Eq)
 
-mag :: Floating a => Vector3D a -> a
+mag :: Vector3D -> Float
 mag (Vec x y z) = sqrt (x^2 + y^2 + z^2)
 
-scalarMult :: Floating a => a -> Vector3D a -> Vector3D a
-scalarMult k (Vec x y z) = Vec (k*x) (k*y) (k*z)
+mult :: Float -> Vector3D -> Vector3D
+mult k (Vec x y z) = Vec (k*x) (k*y) (k*z)
 
-dotProduct :: Floating a => Vector3D a -> Vector3D a -> a
-dotProduct (Vec a1 a2 a3) (Vec b1 b2 b3) = a1*b1 + a2*b2 + a3*b3
+dot :: Vector3D -> Vector3D -> Float
+dot (Vec a1 a2 a3) (Vec b1 b2 b3) = a1*b1 + a2*b2 + a3*b3
 
-instance Floating a => Num (Vector3D a) where
+instance Num Vector3D where
     (Vec a1 a2 a3) + (Vec b1 b2 b3) = Vec (a1 + b1) (a2 + b2) (a3 + b3)
     (Vec a1 a2 a3) - (Vec b1 b2 b3) = Vec (a1 - b1) (a2 - b2) (a3 - b3)
     (Vec a1 a2 a3) * (Vec b1 b2 b3) =

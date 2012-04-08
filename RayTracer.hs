@@ -1,8 +1,5 @@
 import Vector3D
 
-distance ::  Floating a => Vector3D a -> Vector3D a -> a
-distance a b = mag $ a - b
-
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
     | a == 0 = Just $ (-c) / b
