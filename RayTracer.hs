@@ -2,7 +2,7 @@ import Vector3D
 
 data Shape = Sphere { radius::Float
                     , center::Vector3D
-                    }
+                    } deriving (Show, Eq)
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
