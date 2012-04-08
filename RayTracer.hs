@@ -22,20 +22,20 @@ minroot a b c
   where
     disc = (b^2) - (a*c)
 
-intersect :: Shape -> Vector3D -> Vector3D -> Maybe Vector3D
-intersect (Sphere r c) eyePos rayDir =
+intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+intersect s@(Sphere r c) eyePos rayDir =
   let eyeToC = eyePos - c in
   do
     n <- minroot (rayDir `dot` rayDir)
                  (2 * (eyeToC `dot` rayDir))
                  ((eyeToC `dot` eyeToC) - r^2)
-    return $ eyePos + (n `mult` rayDir)
+    return $ (eyePos + (n `mult` rayDir), s)
 
-firstHit :: World -> Vector3D -> Vector3D -> Maybe Vector3D
+firstHit :: World -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
 firstHit w eyePos rayDir = case hits of
                              [] -> Nothing
                              (f:_) -> Just f
-    where hits = sortWith (\h -> mag $ h - eyePos) $
+    where hits = sortWith (\(h, _) -> mag $ h - eyePos) $
                  mapMaybe (\s -> intersect s eyePos rayDir) w
 
 normal :: Shape -> Vector3D -> Vector3D
