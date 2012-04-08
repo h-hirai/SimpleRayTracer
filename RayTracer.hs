@@ -1,8 +1,8 @@
 import Vector3D
 
-data SphereShape = Sphere { radius::Float
-                          , center::Vector3D
-                          }
+data Shape = Sphere { radius::Float
+                    , center::Vector3D
+                    }
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
@@ -15,12 +15,11 @@ minroot a b c
   where
     disc = (b^2) - (a*c)
 
-sphereIntersect :: SphereShape -> Vector3D -> Vector3D -> Maybe Vector3D
-sphereIntersect sphere eyePos rayDir =
-  let c = center sphere
-      eyeToC = eyePos - c in
+intersect :: Shape -> Vector3D -> Vector3D -> Maybe Vector3D
+intersect (Sphere r c) eyePos rayDir =
+  let eyeToC = eyePos - c in
   do
     n <- minroot (rayDir `dot` rayDir)
                  (2 * (eyeToC `dot` rayDir))
-                 ((eyeToC `dot` eyeToC) - (radius sphere)^2)
+                 ((eyeToC `dot` eyeToC) - r^2)
     return $ eyePos + (n `mult` rayDir)
