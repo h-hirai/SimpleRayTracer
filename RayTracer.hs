@@ -40,3 +40,6 @@ firstHit w eyePos rayDir = case hits of
 
 normal :: Shape -> Vector3D -> Vector3D
 normal (Sphere _ c) pt = signum $ c - pt
+
+lambert :: Shape -> Vector3D -> Vector3D -> Float
+lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
