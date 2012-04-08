@@ -2,10 +2,11 @@ import Vector3D
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
-    | a == 0 = Just $ (-c) / b
+    | a == 0 =
+        Just $ (-c) / b
+    | disc >= 0 =
+        Just $ min (((-b) + sqrt disc) / (2*a)) (((-b) - sqrt disc) / (2*a))
     | otherwise =
-        let disc = (b^2) - (a*c) in
-        if disc >= 0
-        then Just $
-             min (((-b) + sqrt disc) / (2*a)) (((-b) - sqrt disc) / (2*a))
-        else Nothing
+        Nothing
+  where
+    disc = (b^2) - (a*c)
