@@ -43,3 +43,8 @@ normal (Sphere _ c) pt = signum $ c - pt
 
 lambert :: Shape -> Vector3D -> Vector3D -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
+
+sendRay :: World -> Vector3D -> Vector3D -> Float
+sendRay w eyePos rayDir = case firstHit w eyePos rayDir of
+                            Just (h, s) -> lambert s h rayDir
+                            Nothing -> 0
