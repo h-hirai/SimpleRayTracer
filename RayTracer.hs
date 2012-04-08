@@ -1,8 +1,15 @@
 import Vector3D
+import Data.Maybe (mapMaybe)
+import GHC.Exts (sortWith)
 
 data Shape = Sphere { radius::Float
                     , center::Vector3D
                     } deriving (Show, Eq)
+
+type World = [Shape]
+
+world :: World
+world = [Sphere 200 (Vec 0 (-300) (-1200))]
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
@@ -23,3 +30,10 @@ intersect (Sphere r c) eyePos rayDir =
                  (2 * (eyeToC `dot` rayDir))
                  ((eyeToC `dot` eyeToC) - r^2)
     return $ eyePos + (n `mult` rayDir)
+
+firstHit :: World -> Vector3D -> Vector3D -> Maybe Vector3D
+firstHit w eyePos rayDir = case hits of
+                             [] -> Nothing
+                             (f:_) -> Just f
+    where hits = sortWith (\h -> mag $ h - eyePos) $
+                 mapMaybe (\s -> intersect s eyePos rayDir) w
