@@ -37,3 +37,6 @@ firstHit w eyePos rayDir = case hits of
                              (f:_) -> Just f
     where hits = sortWith (\h -> mag $ h - eyePos) $
                  mapMaybe (\s -> intersect s eyePos rayDir) w
+
+normal :: Shape -> Vector3D -> Vector3D
+normal (Sphere _ c) pt = signum $ c - pt
