@@ -1,4 +1,5 @@
 import Vector3D
+import Data.Word
 import Data.Maybe (mapMaybe)
 import GHC.Exts (sortWith)
 
@@ -48,3 +49,7 @@ sendRay :: World -> Vector3D -> Vector3D -> Float
 sendRay w eyePos rayDir = case firstHit w eyePos rayDir of
                             Just (h, s) -> lambert s h rayDir
                             Nothing -> 0
+
+colorAt :: World -> Vector3D -> Float -> Float -> Word8
+colorAt w eyePos x y = round $ sendRay w eyePos rayDir * 255
+    where rayDir = signum $ Vec x y 0 - eyePos
