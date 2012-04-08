@@ -1,8 +1,6 @@
 module Vector3D where
 
-data Vector3D = Vec { x::Float
-                    , y::Float
-                    , z::Float } deriving (Show, Eq)
+data Vector3D = Vec { x::Float , y::Float , z::Float } deriving (Show, Eq)
 
 mag :: Vector3D -> Float
 mag (Vec x y z) = sqrt (x^2 + y^2 + z^2)
