@@ -1,3 +1,5 @@
+module Main where
+
 import Data.Word (Word8)
 
 import Vector3D
