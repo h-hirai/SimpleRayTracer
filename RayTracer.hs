@@ -4,7 +4,7 @@ import Data.Word (Word8)
 
 import Vector3D
 import Data.Maybe (mapMaybe)
-import GHC.Exts (sortWith)
+import Data.List (minimumBy)
 
 import Codec.BMP
 import Data.ByteString (pack)
@@ -44,11 +44,11 @@ intersect s@(Sphere r c) eyePos rayDir =
     return $ (eyePos + (n `mult` rayDir), s)
 
 firstHit :: World -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-firstHit w eyePos rayDir = case hits of
-                             [] -> Nothing
-                             (f:_) -> Just f
-    where hits = sortWith (\(h, _) -> mag $ h - eyePos) $
-                 mapMaybe (\s -> intersect s eyePos rayDir) w
+firstHit w eyePos rayDir = if null hits
+                           then Nothing
+                           else Just $ minimumBy cmp hits
+    where hits = mapMaybe (\s -> intersect s eyePos rayDir) w
+          cmp (h1, _) (h2, _) = compare (mag $ h1 - eyePos) (mag $ h2 - eyePos)
 
 normal :: Shape -> Vector3D -> Vector3D
 normal (Sphere _ c) pt = signum $ c - pt
