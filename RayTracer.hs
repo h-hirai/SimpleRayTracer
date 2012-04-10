@@ -41,6 +41,9 @@ world = [Sphere 200 (Vec 0 300 (-1200)) red
          | x <- [-2..2], z <- [2..7]
         ]
 
+eyePos :: Vector3D
+eyePos = (Vec 0 0 200)
+
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
     | a == 0 =
@@ -97,4 +100,4 @@ trace w eyePos startx endx starty endy step =
     height = 1 + floor ((endy - starty) / step)
 
 main :: IO ()
-main = writeBMP "result.bmp" $ trace world (Vec 0 0 200) (-96) 95 (-54) 53 0.2
+main = writeBMP "result.bmp" $ trace world eyePos (-96) 95 (-54) 53 0.2
