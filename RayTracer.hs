@@ -24,6 +24,8 @@ white = Color 255 255 255
 red = Color 255 0 0
 green = Color 0 255 0
 blue = Color 0 0 255
+purple = Color 255 0 255
+cyan = Color 0 255 255
 
 data Shape = Sphere { radius::Float
                     , center::Vector3D
@@ -59,8 +61,10 @@ world_b = [Sphere 25 (Vec (x a) (y a) (z a)) (c a)
 
 world_c :: World
 world_c = [ Sphere 80 (Vec 0 0 (-700)) white
-          , Sphere 55 (Vec (-100) 150 (-700)) (0.7 `mulCol` white)
-          , Sphere 55 (Vec 100 (-150) (-700)) (0.7 `mulCol` white)
+          , Sphere 10 (Vec (-100) 150 (-700)) purple
+          , Sphere 10 (Vec 100 (-150) (-700)) cyan
+          , Sphere 40 (Vec (-60) 90 (-700)) (0.8 `mulCol` purple)
+          , Sphere 40 (Vec 60 (-90) (-700)) (0.8 `mulCol` cyan)
           ]
 
 eyePos :: Vector3D
