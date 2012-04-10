@@ -32,14 +32,36 @@ data Shape = Sphere { radius::Float
 
 type World = [Shape]
 
-world :: World
-world = [Sphere 200 (Vec 0 300 (-1200)) red
-        ,Sphere 200 (Vec 80 150 (-1200)) green
-        ,Sphere 200 (Vec (-70) 100 (-1200)) blue
-        ] ++ [
-         Sphere 40 (Vec (-200*x) (-300) (-400*z)) ((1/z) `mulCol` white)
-         | x <- [-2..2], z <- [2..7]
-        ]
+world_a :: World
+world_a = [Sphere 200 (Vec 0 300 (-1200)) red
+          ,Sphere 200 (Vec 80 150 (-1200)) green
+          ,Sphere 200 (Vec (-70) 100 (-1200)) blue
+          ] ++ [
+           Sphere 40 (Vec (-200*x) (-300) (-400*z)) ((1/z) `mulCol` white)
+           | x <- [-2..2], z <- [2..7]
+          ]
+
+world_b :: World
+world_b = [Sphere 25 (Vec (x a) (y a) (z a)) (c a)
+           | a <- [0..n-1]]
+    where
+      n = 20
+      r = 300
+      step a = fromIntegral a * 2 * pi / fromIntegral n
+      x a = r * sin (step a)
+      y a = x a / 2 + (z a + 700) / 5
+      z a = r * cos (step a) - 700
+      c a = let x = sin $ step a
+                z = cos $ step a in
+            if x > 0
+            then Color (round $ 255 * x) (round $ 255 * abs z) 0
+            else Color 0 (round $ 255 * abs z) (round $ 255 * (-x))
+
+world_c :: World
+world_c = [ Sphere 80 (Vec 0 0 (-700)) white
+          , Sphere 55 (Vec (-100) 150 (-700)) (0.7 `mulCol` white)
+          , Sphere 55 (Vec 100 (-150) (-700)) (0.7 `mulCol` white)
+          ]
 
 eyePos :: Vector3D
 eyePos = (Vec 0 0 200)
@@ -100,4 +122,5 @@ trace w eyePos startx endx starty endy step =
     height = 1 + floor ((endy - starty) / step)
 
 main :: IO ()
-main = writeBMP "result.bmp" $ trace world eyePos (-96) 95 (-54) 53 0.2
+main = writeBMP "result.bmp" $
+       trace (world_b ++ world_c) eyePos (-96) 95 (-54) 53 0.2
