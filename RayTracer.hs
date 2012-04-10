@@ -66,10 +66,17 @@ colorAt :: World -> Vector3D -> Float -> Float -> Word8
 colorAt w eyePos x y = round $ sendRay w eyePos rayDir * 255
     where rayDir = signum $ Vec x y 0 - eyePos
 
+trace :: World -> Vector3D -> Float -> Float -> Float -> Float -> Float -> BMP
+trace w eyePos startx endx starty endy step =
+  packRGBA32ToBMP width height $
+  pack $
+  concatMap gray [colorAt w eyePos col row |
+                  row <- [starty, starty + step .. endy],
+                  col <- [startx, startx + step .. endx]]
+  where
+    width = 1 + floor ((endx - startx) / step)
+    height = 1 + floor ((endy - starty) / step)
+    gray y = [y,y,y,0]
+
 main :: IO ()
-main = do
-  let packed = pack $ concatMap gray [colorAt world (Vec 0 0 200) col row
-                                          | row <- [-50..49], col <- [-50..49]]
-  writeBMP "result.bmp" $ packRGBA32ToBMP 100 100 packed
-      where
-        gray w = [w,w,w,0]
+main = writeBMP "result.bmp" $ trace world (Vec 0 0 200) (-96) 95 (-54) 53 0.2
