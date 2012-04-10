@@ -17,11 +17,11 @@ data Shape = Sphere { radius::Float
 type World = [Shape]
 
 world :: World
-world = [Sphere 200 (Vec 0 (-300) (-1200))
-        ,Sphere 200 (Vec (-80) (-150) (-1200))
-        ,Sphere 200 (Vec 70 (-100) (-1200))
+world = [Sphere 200 (Vec 0 300 (-1200))
+        ,Sphere 200 (Vec 80 150 (-1200))
+        ,Sphere 200 (Vec (-70) 100 (-1200))
         ] ++ [
-         Sphere 40 (Vec (200*x) 300 (-400*z)) | x <- [-2..2], z <- [2..7]
+         Sphere 40 (Vec (-200*x) (-300) (-400*z)) | x <- [-2..2], z <- [2..7]
         ]
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
