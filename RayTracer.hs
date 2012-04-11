@@ -65,6 +65,8 @@ world_c = [ Sphere 80 (Vec 0 0 (-700)) white
           , Sphere 10 (Vec 100 (-150) (-700)) cyan
           , Sphere 40 (Vec (-60) 90 (-700)) (0.8 `mulCol` purple)
           , Sphere 40 (Vec 60 (-90) (-700)) (0.8 `mulCol` cyan)
+          , Sphere 900 (Vec (-520) 1040 (-700)) red
+          , Sphere 900 (Vec 520 (-1040) (-700)) blue
           ]
 
 eyePos :: Vector3D
