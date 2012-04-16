@@ -1,4 +1,4 @@
-module RayTracer where
+module Main where
 
 import Data.Word (Word8)
 
@@ -126,3 +126,7 @@ trace w eyePos startx endx starty endy step =
   where
     width = 1 + floor ((endx - startx) / step)
     height = 1 + floor ((endy - starty) / step)
+
+main :: IO ()
+main = writeBMP "result.bmp" $
+       trace (world_b ++ world_c) eyePos (-96) 95 (-54) 53 0.2
