@@ -119,10 +119,10 @@ colorAt w eyePos x y = sendRay w eyePos rayDir
 
 trace :: World -> Vector3D -> Float -> Float -> Float -> Float -> Float -> BMP
 trace w eyePos startx endx starty endy step =
-  packRGBA32ToBMP width height $
-  B.concat [packCol $ colorAt w eyePos col row |
-          row <- [starty, starty + step .. endy],
-          col <- [startx, startx + step .. endx]]
-  where
-    width = 1 + floor ((endx - startx) / step)
-    height = 1 + floor ((endy - starty) / step)
+    let rows = [starty, starty + step .. endy]
+        cols = [startx, startx + step .. endx]
+        bs = B.concat [packCol $ colorAt w eyePos col row |
+                       row <- rows, col <- cols]
+        height = length rows
+        width = length cols in
+    packRGBA32ToBMP width height bs
