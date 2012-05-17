@@ -3,15 +3,10 @@
 module RayTracerTH where
 
 import Language.Haskell.TH
-
-import RayTracer
-import Vector3D
-
 import Codec.BMP
+import RayTracer
 
-runTrace :: World -> Vector3D ->
-            Float -> Float -> Float -> Float -> Float ->
-            ExpQ
-runTrace w eyePos startx endx starty endy step = do
-  runIO $ writeBMP "result.bmp" $ trace w eyePos startx endx starty endy step
-  tupE []
+do
+  runIO $ writeBMP "result.bmp" $
+        trace (world_b ++ world_c) eyePos (-96) 96 (-54) 54 1.0
+  return []
