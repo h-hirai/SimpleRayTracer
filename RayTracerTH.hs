@@ -9,5 +9,5 @@ import WorldB
 
 do
   runIO $ writeBMP "result.bmp" $
-        trace world cameraPos (-96) 96 (-54) 54 1.0
+        trace world (-96) 96 (-54) 54 1.0
   return []

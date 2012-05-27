@@ -32,7 +32,9 @@ data Shape = Sphere { radius::Float
                     , color::Color
                     } deriving (Show, Eq)
 
-type World = [Shape]
+data World = World { shapes::[Shape]
+                   , cameraPos::Vector3D
+                   }
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
@@ -54,12 +56,12 @@ intersect s@(Sphere radius center _) cameraPos rayDir =
                  ((camToC `dot` camToC) - radius^2)
     return $ (cameraPos + (n `mult` rayDir), s)
 
-firstHit :: World -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-firstHit w cameraPos rayDir =
+firstHit :: World -> Vector3D -> Maybe (Vector3D, Shape)
+firstHit (World shapes cameraPos) rayDir =
     if null hits
     then Nothing
     else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - cameraPos) hits
-    where hits = mapMaybe (\s -> intersect s cameraPos rayDir) w
+    where hits = mapMaybe (\s -> intersect s cameraPos rayDir) shapes
 
 normal :: Shape -> Vector3D -> Vector3D
 normal (Sphere _ c _) pt = signum $ c - pt
@@ -67,24 +69,23 @@ normal (Sphere _ c _) pt = signum $ c - pt
 lambert :: Shape -> Vector3D -> Vector3D -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
-sendRay :: World -> Vector3D -> Vector3D -> Color
-sendRay w cameraPos rayDir =
-    case firstHit w cameraPos rayDir of
+sendRay :: World -> Vector3D -> Color
+sendRay w rayDir =
+    case firstHit w rayDir of
       Just (h, s) -> let l = lambert s h rayDir
                          c = color s in
                      l `mulCol` c
       Nothing -> Color 0 0 0
 
-colorAt :: World -> Vector3D -> Float -> Float -> Color
-colorAt w cameraPos x y = sendRay w cameraPos rayDir
+colorAt :: World -> Float -> Float -> Color
+colorAt w@(World _ cameraPos) x y = sendRay w rayDir
     where rayDir = signum $ Vec x y 0 - cameraPos
 
-trace :: World -> Vector3D -> Float -> Float -> Float -> Float -> Float -> BMP
-trace w cameraPos startx endx starty endy step =
+trace :: World -> Float -> Float -> Float -> Float -> Float -> BMP
+trace w startx endx starty endy step =
     let rows = [starty, starty + step .. endy]
         cols = [startx, startx + step .. endx]
-        bs = B.concat [packCol $ colorAt w cameraPos col row |
-                       row <- rows, col <- cols]
+        bs = B.concat [packCol $ colorAt w col row | row <- rows, col <- cols]
         height = length rows
         width = length cols in
     packRGBA32ToBMP width height bs

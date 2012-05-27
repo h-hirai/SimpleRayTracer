@@ -3,7 +3,7 @@ module WorldB (world, cameraPos) where
 import RayTracer
 import Vector3D
 
-ring :: World
+ring :: [Shape]
 ring = [Sphere 25 (Vec (x a) (y a) (z a)) (c a) | a <- [0..n-1]]
     where
       n = 20
@@ -18,7 +18,7 @@ ring = [Sphere 25 (Vec (x a) (y a) (z a)) (c a) | a <- [0..n-1]]
             then Color (round $ 255 * x) (round $ 255 * abs z) 0
             else Color 0 (round $ 255 * abs z) (round $ 255 * (-x))
 
-axis :: World
+axis :: [Shape]
 axis = [ Sphere 80 (Vec 0 0 (-700)) white
        , Sphere 10 (Vec (-100) 150 (-700)) purple
        , Sphere 10 (Vec 100 (-150) (-700)) cyan
@@ -28,7 +28,4 @@ axis = [ Sphere 80 (Vec 0 0 (-700)) white
        , Sphere 900 (Vec 520 (-1040) (-700)) blue
        ]
 
-world = ring ++ axis
-
-cameraPos :: Vector3D
-cameraPos = (Vec 0 0 200)
+world = World (ring ++ axis) (Vec 0 0 200)
