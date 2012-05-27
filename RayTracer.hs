@@ -34,8 +34,8 @@ data Shape = Sphere { radius::Float
 
 type World = [Shape]
 
-eyePos :: Vector3D
-eyePos = (Vec 0 0 200)
+cameraPos :: Vector3D
+cameraPos = (Vec 0 0 200)
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
@@ -49,20 +49,20 @@ minroot a b c
     disc = (b^2) - (4*a*c)
 
 intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-intersect s@(Sphere r c _) eyePos rayDir =
-  let eyeToC = eyePos - c in
+intersect s@(Sphere r c _) cameraPos rayDir =
+  let eyeToC = cameraPos - c in
   do
     n <- minroot (rayDir `dot` rayDir)
                  (2 * (eyeToC `dot` rayDir))
                  ((eyeToC `dot` eyeToC) - r^2)
-    return $ (eyePos + (n `mult` rayDir), s)
+    return $ (cameraPos + (n `mult` rayDir), s)
 
 firstHit :: World -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-firstHit w eyePos rayDir =
+firstHit w cameraPos rayDir =
     if null hits
     then Nothing
-    else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - eyePos) hits
-    where hits = mapMaybe (\s -> intersect s eyePos rayDir) w
+    else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - cameraPos) hits
+    where hits = mapMaybe (\s -> intersect s cameraPos rayDir) w
 
 normal :: Shape -> Vector3D -> Vector3D
 normal (Sphere _ c _) pt = signum $ c - pt
@@ -71,22 +71,22 @@ lambert :: Shape -> Vector3D -> Vector3D -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
 sendRay :: World -> Vector3D -> Vector3D -> Color
-sendRay w eyePos rayDir =
-    case firstHit w eyePos rayDir of
+sendRay w cameraPos rayDir =
+    case firstHit w cameraPos rayDir of
       Just (h, s) -> let l = lambert s h rayDir
                          c = color s in
                      l `mulCol` c
       Nothing -> Color 0 0 0
 
 colorAt :: World -> Vector3D -> Float -> Float -> Color
-colorAt w eyePos x y = sendRay w eyePos rayDir
-    where rayDir = signum $ Vec x y 0 - eyePos
+colorAt w cameraPos x y = sendRay w cameraPos rayDir
+    where rayDir = signum $ Vec x y 0 - cameraPos
 
 trace :: World -> Vector3D -> Float -> Float -> Float -> Float -> Float -> BMP
-trace w eyePos startx endx starty endy step =
+trace w cameraPos startx endx starty endy step =
     let rows = [starty, starty + step .. endy]
         cols = [startx, startx + step .. endx]
-        bs = B.concat [packCol $ colorAt w eyePos col row |
+        bs = B.concat [packCol $ colorAt w cameraPos col row |
                        row <- rows, col <- cols]
         height = length rows
         width = length cols in
