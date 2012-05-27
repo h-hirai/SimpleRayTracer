@@ -49,12 +49,12 @@ minroot a b c
     disc = (b^2) - (4*a*c)
 
 intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-intersect s@(Sphere r c _) cameraPos rayDir =
-  let eyeToC = cameraPos - c in
+intersect s@(Sphere radius center _) cameraPos rayDir =
+  let camToC = cameraPos - center in
   do
     n <- minroot (rayDir `dot` rayDir)
-                 (2 * (eyeToC `dot` rayDir))
-                 ((eyeToC `dot` eyeToC) - r^2)
+                 (2 * (camToC `dot` rayDir))
+                 ((camToC `dot` camToC) - radius^2)
     return $ (cameraPos + (n `mult` rayDir), s)
 
 firstHit :: World -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
