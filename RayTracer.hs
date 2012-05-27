@@ -34,9 +34,6 @@ data Shape = Sphere { radius::Float
 
 type World = [Shape]
 
-cameraPos :: Vector3D
-cameraPos = (Vec 0 0 200)
-
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
     | a == 0 =

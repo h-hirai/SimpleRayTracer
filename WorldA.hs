@@ -1,4 +1,4 @@
-module WorldA (world) where
+module WorldA (world, cameraPos) where
 
 import RayTracer
 import Vector3D
@@ -11,3 +11,6 @@ world = [Sphere 200 (Vec 0 300 (-1200)) red
          Sphere 40 (Vec (-200*x) (-300) (-400*z)) ((1/z) `mulCol` white)
          | x <- [-2..2], z <- [2..7]
         ]
+
+cameraPos :: Vector3D
+cameraPos = (Vec 0 0 200)

@@ -1,4 +1,4 @@
-module WorldB (world) where
+module WorldB (world, cameraPos) where
 
 import RayTracer
 import Vector3D
@@ -29,3 +29,6 @@ axis = [ Sphere 80 (Vec 0 0 (-700)) white
        ]
 
 world = ring ++ axis
+
+cameraPos :: Vector3D
+cameraPos = (Vec 0 0 200)
