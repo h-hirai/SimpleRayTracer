@@ -16,7 +16,7 @@ instance Num Vector3D where
     (Vec a1 a2 a3) - (Vec b1 b2 b3) = Vec (a1 - b1) (a2 - b2) (a3 - b3)
     (Vec a1 a2 a3) * (Vec b1 b2 b3) =
         Vec (a2*b3 - a3*b2) (a3*b1 - b1*b3) (a1*b2 - a2*b1)
-    negate (Vec a1 a2 a3) = undefined
+    negate (Vec a1 a2 a3) = Vec (-a1) (-a2) (-a3)
     abs (Vec a1 a2 a3) = undefined
     signum v@(Vec x y z) = let d = mag v in Vec (x / d) (y / d) (z / d)
     fromInteger n = undefined

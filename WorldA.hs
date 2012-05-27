@@ -12,4 +12,4 @@ ss = [Sphere 200 (Vec 0 300 (-1200)) red
       | x <- [-2..2], z <- [2..7]
      ]
 
-world = World ss (Vec 0 0 200)
+world = World ss (Vec 0 0 200) (Vec 0 0 200)

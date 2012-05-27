@@ -34,6 +34,7 @@ data Shape = Sphere { radius::Float
 
 data World = World { shapes::[Shape]
                    , cameraPos::Vector3D
+                   , raySrcPos::Vector3D
                    }
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
@@ -48,20 +49,24 @@ minroot a b c
     disc = (b^2) - (4*a*c)
 
 intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
-intersect s@(Sphere radius center _) cameraPos rayDir =
-  let camToC = cameraPos - center in
+intersect s@(Sphere radius center _) startPos dir =
+  let camToC = startPos - center in
   do
-    n <- minroot (rayDir `dot` rayDir)
-                 (2 * (camToC `dot` rayDir))
+    n <- minroot (dir `dot` dir)
+                 (2 * (camToC `dot` dir))
                  ((camToC `dot` camToC) - radius^2)
-    return $ (cameraPos + (n `mult` rayDir), s)
+    return $ (startPos + (n `mult` dir), s)
 
-firstHit :: World -> Vector3D -> Maybe (Vector3D, Shape)
-firstHit (World shapes cameraPos) rayDir =
+
+allHits :: [Shape] -> Vector3D -> Vector3D -> [(Vector3D, Shape)]
+allHits shapes startPos dir = mapMaybe (\s -> intersect s startPos dir) shapes
+
+firstHit :: [Shape] -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+firstHit shapes startPos dir =
+    let hits = allHits shapes startPos dir in
     if null hits
     then Nothing
-    else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - cameraPos) hits
-    where hits = mapMaybe (\s -> intersect s cameraPos rayDir) shapes
+    else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - startPos) hits
 
 normal :: Shape -> Vector3D -> Vector3D
 normal (Sphere _ c _) pt = signum $ c - pt
@@ -70,16 +75,22 @@ lambert :: Shape -> Vector3D -> Vector3D -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
 sendRay :: World -> Vector3D -> Color
-sendRay w rayDir =
-    case firstHit w rayDir of
-      Just (h, s) -> let l = lambert s h rayDir
-                         c = color s in
-                     l `mulCol` c
+sendRay w@(World shapes cameraPos raySrcPos) cameraDir =
+    case firstHit shapes cameraPos cameraDir of
+      Just (hitPos, s) ->
+          let rayDir = signum $ hitPos - raySrcPos in
+          case firstHit shapes raySrcPos rayDir of
+            Just (hitPos', s')
+              | nearEnough hitPos hitPos' && s == s' ->
+                  let l = lambert s hitPos rayDir
+                      c = color s in
+                  l `mulCol` c
+            _ -> Color 0 0 0
+            where nearEnough v1 v2 = 1 > abs (mag (v1 - v2))
       Nothing -> Color 0 0 0
 
 colorAt :: World -> Float -> Float -> Color
-colorAt w@(World _ cameraPos) x y = sendRay w rayDir
-    where rayDir = signum $ Vec x y 0 - cameraPos
+colorAt w x y = sendRay w (signum $ Vec x y 0 - cameraPos w)
 
 trace :: World -> Float -> Float -> Float -> Float -> Float -> BMP
 trace w startx endx starty endy step =
