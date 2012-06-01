@@ -81,12 +81,12 @@ sendRay w@(World shapes cameraPos raySrcPos) cameraDir =
           let rayDir = signum $ hitPos - raySrcPos in
           case firstHit shapes raySrcPos rayDir of
             Just (hitPos', s')
-              | nearEnough hitPos hitPos' && s == s' ->
+              | closeEnough hitPos hitPos' && s == s' ->
                   let l = lambert s hitPos rayDir
                       c = color s in
                   l `mulCol` c
             _ -> Color 0 0 0
-            where nearEnough v1 v2 = 1 > abs (mag (v1 - v2))
+            where closeEnough v1 v2 = 1 > mag (v1 - v2)
       Nothing -> Color 0 0 0
 
 colorAt :: World -> Float -> Float -> Color
