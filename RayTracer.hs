@@ -32,9 +32,11 @@ data Shape = Sphere { radius::Float
                     , color::Color
                     } deriving (Show, Eq)
 
+type Screen = (Float, Float, Float, Float)
 data World = World { shapes::[Shape]
                    , cameraPos::Vector3D
                    , raySrcPos::Vector3D
+                   , screen::Screen
                    }
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
@@ -75,7 +77,7 @@ lambert :: Shape -> Vector3D -> Vector3D -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
 sendRay :: World -> Vector3D -> Color
-sendRay w@(World shapes cameraPos raySrcPos) cameraDir =
+sendRay w@(World shapes cameraPos raySrcPos _) cameraDir =
     case firstHit shapes cameraPos cameraDir of
       Just (hitPos, s) ->
           let rayDir = signum $ hitPos - raySrcPos in
@@ -92,10 +94,11 @@ sendRay w@(World shapes cameraPos raySrcPos) cameraDir =
 colorAt :: World -> Float -> Float -> Color
 colorAt w x y = sendRay w (signum $ Vec x y 0 - cameraPos w)
 
-trace :: World -> Float -> Float -> Float -> Float -> Float -> BMP
-trace w startx endx starty endy step =
-    let rows = [starty, starty + step .. endy]
-        cols = [startx, startx + step .. endx]
+trace :: World -> Float -> BMP
+trace w resolution =
+    let (startx, endx, starty, endy) = screen w
+        rows = [starty, starty + resolution .. endy]
+        cols = [startx, startx + resolution .. endx]
         bs = B.concat [packCol $ colorAt w col row | row <- rows, col <- cols]
         height = length rows
         width = length cols in

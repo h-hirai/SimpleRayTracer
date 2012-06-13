@@ -24,4 +24,6 @@ axis = [ Sphere 150 (Vec 0 0 (-700)) white
        , Sphere 600 (Vec (-400) 0 (-3000)) blue
        ]
 
-world = World (ring ++ axis) (Vec 0 0 200) (Vec (-50) (-50) 150)
+screenSize = (-96, 96, -54, 54)
+
+world = World (ring ++ axis) (Vec 0 0 200) (Vec (-50) (-50) 150) screenSize
