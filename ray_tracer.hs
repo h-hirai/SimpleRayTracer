@@ -3,7 +3,11 @@ module Main where
 import RayTracer
 import World
 import Codec.BMP
+import System (getArgs)
 
 main :: IO ()
-main = writeBMP "result.bmp" $
-       trace world_c 0.5
+main = do
+  [w, res, outf] <- getArgs
+  writeBMP outf $ trace (case w of "world_a" -> world_a
+                                   "world_b" -> world_b
+                                   "world_c" -> world_c) (read res)
