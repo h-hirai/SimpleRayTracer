@@ -12,7 +12,7 @@ import qualified Data.ByteString as B
 
 data Color = Color { r::Word8 , g::Word8 , b::Word8} deriving (Show, Eq)
 
-mulCol :: Float -> Color -> Color
+mulCol :: (RealFrac a) => a -> Color -> Color
 mulCol a (Color r g b) = Color (mul a r) (mul a g) (mul a b)
     where mul f i = round $ f * fromIntegral i
 
@@ -27,17 +27,17 @@ blue = Color 0 0 255
 purple = Color 255 0 255
 cyan = Color 0 255 255
 
-data Shape = Sphere { radius::Float
-                    , center::Vector3D
-                    , color::Color
-                    } deriving (Show, Eq)
+data Shape a = Sphere { radius::a
+                      , center::Vector3D a
+                      , color::Color
+                      } deriving (Show, Eq)
 
-type Screen = (Float, Float, Float, Float)
-data World = World { shapes::[Shape]
-                   , cameraPos::Vector3D
-                   , raySrcPos::Vector3D
-                   , screen::Screen
-                   }
+type Screen a = (a, a, a, a)
+data World a = World { shapes::[Shape a]
+                     , cameraPos::Vector3D a
+                     , raySrcPos::Vector3D a
+                     , screen::Screen a
+                     } deriving (Show, Eq)
 
 minroot :: (Floating a, Ord a) => a -> a -> a -> Maybe a
 minroot a b c
@@ -50,7 +50,8 @@ minroot a b c
   where
     disc = (b^2) - (4*a*c)
 
-intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+intersect :: (Floating a, Ord a) =>
+             Shape a -> Vector3D a -> Vector3D a -> Maybe (Vector3D a, Shape a)
 intersect s@(Sphere radius center _) startPos dir =
   let camToC = startPos - center in
   do
@@ -60,23 +61,28 @@ intersect s@(Sphere radius center _) startPos dir =
     return $ (startPos + (n `mult` dir), s)
 
 
-allHits :: [Shape] -> Vector3D -> Vector3D -> [(Vector3D, Shape)]
+allHits :: (Floating a, Ord a) =>
+           [Shape a] -> Vector3D a -> Vector3D a -> [(Vector3D a, Shape a)]
 allHits shapes startPos dir = mapMaybe (\s -> intersect s startPos dir) shapes
 
-firstHit :: [Shape] -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+firstHit :: (Floating a, Ord a) =>
+            [Shape a] -> Vector3D a -> Vector3D a -> Maybe (Vector3D a, Shape a)
 firstHit shapes startPos dir =
     let hits = allHits shapes startPos dir in
     if null hits
     then Nothing
     else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - startPos) hits
 
-normal :: Shape -> Vector3D -> Vector3D
+normal :: (Floating a) =>
+          Shape a -> Vector3D a -> Vector3D a
 normal (Sphere _ c _) pt = signum $ c - pt
 
-lambert :: Shape -> Vector3D -> Vector3D -> Float
+lambert :: (Floating a, Ord a) =>
+           Shape a -> Vector3D a -> Vector3D a -> a
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
-sendRay :: World -> Vector3D -> Color
+sendRay :: (Floating a, Ord a, RealFrac a) =>
+           World a -> Vector3D a -> Color
 sendRay w@(World shapes cameraPos raySrcPos _) cameraDir =
     case firstHit shapes cameraPos cameraDir of
       Just (hitPos, s) ->
@@ -91,10 +97,12 @@ sendRay w@(World shapes cameraPos raySrcPos _) cameraDir =
             where closeEnough v1 v2 = 1 > mag (v1 - v2)
       Nothing -> Color 0 0 0
 
-colorAt :: World -> Float -> Float -> Color
+colorAt :: (Floating a, Ord a, RealFrac a) =>
+           World a -> a -> a -> Color
 colorAt w x y = sendRay w (signum $ Vec x y 0 - cameraPos w)
 
-trace :: World -> Float -> BMP
+trace :: (Floating a, RealFrac a, Enum a) =>
+         World a -> a -> BMP
 trace w resolution =
     let (startx, endx, starty, endy) = screen w
         rows = [starty, starty + resolution .. endy]

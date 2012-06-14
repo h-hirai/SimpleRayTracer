@@ -3,7 +3,7 @@ module World (world_a, world_b, world_c) where
 import RayTracer
 import Vector3D
 
-ss :: [Shape]
+ss :: (Floating a, RealFrac a, Enum a) => [Shape a]
 ss = [Sphere 200 (Vec 0 300 (-1200)) red
      ,Sphere 200 (Vec 80 150 (-1200)) green
      ,Sphere 200 (Vec (-70) 100 (-1200)) blue
@@ -12,7 +12,7 @@ ss = [Sphere 200 (Vec 0 300 (-1200)) red
       | x <- [-2..2], z <- [2..7]
      ]
 
-ring :: [Shape]
+ring :: (Floating a) => [Shape a]
 ring = [Sphere 25 (Vec (x a) (y a) (z a)) (c a) | a <- [0..n-1]]
     where
       n = 20
@@ -27,7 +27,7 @@ ring = [Sphere 25 (Vec (x a) (y a) (z a)) (c a) | a <- [0..n-1]]
             then Color (round $ 255 * x) (round $ 255 * abs z) 0
             else Color 0 (round $ 255 * abs z) (round $ 255 * (-x))
 
-axis :: [Shape]
+axis :: (Floating a) => [Shape a]
 axis = [ Sphere 80 (Vec 0 0 (-700)) white
        , Sphere 10 (Vec (-100) 150 (-700)) purple
        , Sphere 10 (Vec 100 (-150) (-700)) cyan
@@ -37,7 +37,7 @@ axis = [ Sphere 80 (Vec 0 0 (-700)) white
        , Sphere 900 (Vec 520 (-1040) (-700)) blue
        ]
 
-dual :: [Shape]
+dual :: (Floating a) => [Shape a]
 dual = [ Sphere 150 (Vec 0 0 (-700)) white
        , Sphere 800 (Vec 400 0 (-3000)) red
        , Sphere 600 (Vec (-400) 0 (-3000)) blue
