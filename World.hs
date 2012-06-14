@@ -1,7 +1,16 @@
-module WorldB (world, cameraPos) where
+module World (world_a, world_b, world_c) where
 
 import RayTracer
 import Vector3D
+
+ss :: [Shape]
+ss = [Sphere 200 (Vec 0 300 (-1200)) red
+     ,Sphere 200 (Vec 80 150 (-1200)) green
+     ,Sphere 200 (Vec (-70) 100 (-1200)) blue
+     ] ++ [
+      Sphere 40 (Vec (-200*x) (-300) (-400*z)) ((1/z) `mulCol` white)
+      | x <- [-2..2], z <- [2..7]
+     ]
 
 ring :: [Shape]
 ring = [Sphere 25 (Vec (x a) (y a) (z a)) (c a) | a <- [0..n-1]]
@@ -28,4 +37,17 @@ axis = [ Sphere 80 (Vec 0 0 (-700)) white
        , Sphere 900 (Vec 520 (-1040) (-700)) blue
        ]
 
-world = World (ring ++ axis) (Vec 0 0 200) (Vec 0 0 200)
+dual :: [Shape]
+dual = [ Sphere 150 (Vec 0 0 (-700)) white
+       , Sphere 800 (Vec 400 0 (-3000)) red
+       , Sphere 600 (Vec (-400) 0 (-3000)) blue
+       ]
+
+screenSize = (-96, 96, -54, 54)
+camPos =  (Vec 0 0 200)
+raySrcPosA = (Vec 0 0 200)
+raySrcPosB = (Vec (-50) (-50) 150)
+
+world_a = World ss camPos raySrcPosA screenSize
+world_b = World (ring ++ axis) camPos raySrcPosA screenSize
+world_c = World (ring ++ dual) camPos raySrcPosB screenSize

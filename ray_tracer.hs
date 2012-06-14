@@ -1,9 +1,9 @@
 module Main where
 
 import RayTracer
-import WorldC
+import World
 import Codec.BMP
 
 main :: IO ()
 main = writeBMP "result.bmp" $
-       trace world 0.5
+       trace world_c 0.5
