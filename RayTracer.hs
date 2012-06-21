@@ -27,6 +27,8 @@ blue = Color 0 0 255
 purple = Color 255 0 255
 cyan = Color 0 255 255
 
+type T = Float
+
 data Shape a = Sphere { radius::a
                       , center::Vector3D a
                       , color::Color
@@ -101,8 +103,7 @@ colorAt :: (Floating a, Ord a, RealFrac a) =>
            World a -> a -> a -> Color
 colorAt w x y = sendRay w (signum $ Vec x y 0 - cameraPos w)
 
-trace :: (Floating a, RealFrac a, Enum a) =>
-         World a -> a -> BMP
+trace :: World T -> T -> BMP
 trace w resolution =
     let (startx, endx, starty, endy) = screen w
         rows = [starty, starty + resolution .. endy]

@@ -50,8 +50,7 @@ camPos =  (Vec 0 0 200)
 raySrcPosA = (Vec 0 0 200)
 raySrcPosB = (Vec (-50) (-50) 150)
 
-world_a :: (Floating a, RealFrac a, Enum a) => World a
-world_b, world_c :: (Floating a) => World a
+world_a, world_b, world_c :: World T
 world_a = World ss camPos raySrcPosA screenSize
 world_b = World (ring ++ axis) camPos raySrcPosA screenSize
 world_c = World (ring ++ dual) camPos raySrcPosB screenSize
