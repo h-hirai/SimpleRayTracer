@@ -43,11 +43,15 @@ dual = [ Sphere 150 (Vec 0 0 (-700)) white
        , Sphere 600 (Vec (-400) 0 (-3000)) blue
        ]
 
+screenSize :: (Floating a) => Screen a
 screenSize = (-96, 96, -54, 54)
+camPos, raySrcPosA, raySrcPosB :: (Floating a) => Vector3D a
 camPos =  (Vec 0 0 200)
 raySrcPosA = (Vec 0 0 200)
 raySrcPosB = (Vec (-50) (-50) 150)
 
+world_a :: (Floating a, RealFrac a, Enum a) => World a
+world_b, world_c :: (Floating a) => World a
 world_a = World ss camPos raySrcPosA screenSize
 world_b = World (ring ++ axis) camPos raySrcPosA screenSize
 world_c = World (ring ++ dual) camPos raySrcPosB screenSize
