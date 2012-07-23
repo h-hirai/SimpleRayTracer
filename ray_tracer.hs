@@ -3,7 +3,7 @@ module Main where
 import RayTracer
 import World
 import Codec.BMP
-import System (getArgs)
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
