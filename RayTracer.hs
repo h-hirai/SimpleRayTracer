@@ -78,18 +78,18 @@ lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
 sendRay :: World -> Vector3D -> Color
 sendRay w@(World shapes cameraPos raySrcPos _) cameraDir =
-    case firstHit shapes cameraPos cameraDir of
-      Just (hitPos, s) ->
-          let rayDir = signum $ hitPos - raySrcPos in
-          case firstHit shapes raySrcPos rayDir of
-            Just (hitPos', s')
-              | closeEnough hitPos hitPos' && s == s' ->
-                  let l = lambert s hitPos rayDir
-                      c = color s in
-                  l `mulCol` c
-            _ -> Color 0 0 0
-            where closeEnough v1 v2 = 1 > mag (v1 - v2)
-      Nothing -> Color 0 0 0
+    maybe (Color 0 0 0) id $ do
+      (hitPos, s) <- firstHit shapes cameraPos cameraDir
+      let rayDir = signum $ hitPos - raySrcPos
+      (hitPos', s') <- firstHit shapes raySrcPos rayDir
+      if closeEnough hitPos hitPos' && s == s'
+      then
+          let l = lambert s hitPos rayDir
+              c = color s in
+          Just $ l `mulCol` c
+      else
+          Nothing
+    where closeEnough v1 v2 = 1 > mag (v1 - v2)
 
 colorAt :: World -> Float -> Float -> Color
 colorAt w x y = sendRay w (signum $ Vec x y 0 - cameraPos w)
