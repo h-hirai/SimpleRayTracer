@@ -27,15 +27,18 @@ blue = Color 0 0 255
 purple = Color 255 0 255
 cyan = Color 0 255 255
 
+type Position = Vector3D
+type Direction = Vector3D
+
 data Shape = Sphere { radius::Float
-                    , center::Vector3D
+                    , center::Position
                     , color::Color
                     } deriving (Show, Eq)
 
 type Screen = (Float, Float, Float, Float)
 data World = World { shapes::[Shape]
-                   , cameraPos::Vector3D
-                   , raySrcPos::Vector3D
+                   , cameraPos::Position
+                   , raySrcPos::Position
                    , screen::Screen
                    }
 
@@ -50,7 +53,7 @@ minroot a b c
   where
     disc = (b^2) - (4*a*c)
 
-intersect :: Shape -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+intersect :: Shape -> Position -> Direction -> Maybe (Position, Shape)
 intersect s@(Sphere radius center _) startPos dir =
   let camToC = startPos - center in
   do
@@ -60,23 +63,23 @@ intersect s@(Sphere radius center _) startPos dir =
     return $ (startPos + (n `mult` dir), s)
 
 
-allHits :: [Shape] -> Vector3D -> Vector3D -> [(Vector3D, Shape)]
+allHits :: [Shape] -> Position -> Direction -> [(Position, Shape)]
 allHits shapes startPos dir = mapMaybe (\s -> intersect s startPos dir) shapes
 
-firstHit :: [Shape] -> Vector3D -> Vector3D -> Maybe (Vector3D, Shape)
+firstHit :: [Shape] -> Position -> Direction -> Maybe (Position, Shape)
 firstHit shapes startPos dir =
     let hits = allHits shapes startPos dir in
     if null hits
     then Nothing
     else Just $ minimumBy (comparing $ \(h, _) -> mag $ h - startPos) hits
 
-normal :: Shape -> Vector3D -> Vector3D
+normal :: Shape -> Position -> Vector3D
 normal (Sphere _ c _) pt = signum $ c - pt
 
-lambert :: Shape -> Vector3D -> Vector3D -> Float
+lambert :: Shape -> Position -> Direction -> Float
 lambert s hitPos rayDir = max 0 $ rayDir `dot` normal s hitPos
 
-sendRay :: World -> Vector3D -> Color
+sendRay :: World -> Direction -> Color
 sendRay w@(World shapes cameraPos raySrcPos _) cameraDir =
     maybe (Color 0 0 0) id $ do
       (hitPos, s) <- firstHit shapes cameraPos cameraDir
